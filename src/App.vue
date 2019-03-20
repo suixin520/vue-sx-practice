@@ -1,17 +1,17 @@
 <template>
   <div id="app">
-    hello world
+    <m-header></m-header>
   </div>
 </template>
 
 <script>
-
+import MHeader from 'components/m-header'
+export default {
+  components: {
+    MHeader
+  }
+}
 </script>
 
 <style lang="scss" scoped>
-@import "common/scss/variable";
-
-#app {
-  color: $color-sub-theme;
-}
 </style>
