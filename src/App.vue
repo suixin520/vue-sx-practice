@@ -12,6 +12,6 @@
 @import "common/scss/variable";
 
 #app {
-  color: $color-theme;
+  color: $color-sub-theme;
 }
 </style>
