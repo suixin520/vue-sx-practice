@@ -81,7 +81,7 @@ export default {
 <style lang="scss" scoped>
 @import "~common/scss/variable";
 .singer {
-  position: fixex;
+  position: fixed;
   top: 88px;
   bottom: 0;
   width: 100%;
