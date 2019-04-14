@@ -1,5 +1,11 @@
 <template>
-  <scroll class="listview" :data="data" ref="listview">
+  <scroll class="listview"
+    :data="data"
+    ref="listview"
+    :listenScroll="listenScroll"
+    :probeType="probeType"
+    @scroll="scroll"
+  >
     <ul>
       <li v-for="(group, index) in data" :key="index" class="list-group" ref="listGroup">
         <h2 class="list-group-title">{{group.title}}</h2>
@@ -11,9 +17,11 @@
         </ul>
       </li>
     </ul>
-    <div class="list-shortcut" @touchstart.stop.prevent="onShortcutTouchStart">
+    <div class="list-shortcut" @touchstart.stop.prevent="onShortcutTouchStart" @touchmove.stop.prevent="onShortcutTouchMove">
       <ul>
-        <li v-for="(item, k) in shortcutList" :key="k" :data-index="k" class="item">
+        <li v-for="(item, k) in shortcutList" :key="k" :data-index="k" class="item"
+        :class="{'current':currentIndex === k}"
+        >
           {{item}}
         </li>
       </ul>
@@ -25,6 +33,8 @@
 import Scroll from 'base/scroll'
 import { getData } from 'common/js/dom'
 
+const ANCHOR_HEIGHT = 18
+
 export default {
   props: {
     data: {
@@ -32,6 +42,12 @@ export default {
       default() {
         return []
       }
+    }
+  },
+  data() {
+    return {
+      scrollY: -1,
+      currentIndex: 0
     }
   },
   computed: {
@@ -44,10 +60,61 @@ export default {
   components: {
     Scroll
   },
+  created() {
+    this.touch = {} // 不在data中定义是因为data中vue会自动给变量加上getter和setter方法，这里只是为了方法中变量的共享。
+    this.listenScroll = true
+    this.probeType = 3
+    this.listHeight = []
+  },
   methods: {
     onShortcutTouchStart(e) {
       let anchorIndex = getData(e.target, 'index')
-      this.$refs.listview.scrollToElement(this.$refs.listGroup[anchorIndex], 0)
+      let firstTouch = e.touches[0]
+      this.touch.y1 = firstTouch.pageY
+      this.touch.anchorIndex = anchorIndex
+      this._scrollTo(anchorIndex)
+    },
+    onShortcutTouchMove(e) {
+      let firstTouch = e.touches[0]
+      this.touch.y2 = firstTouch.pageY
+      let delta = (this.touch.y2 - this.touch.y1) / ANCHOR_HEIGHT | 0
+      let anchorIndex = parseInt(this.touch.anchorIndex) + delta
+      this._scrollTo(anchorIndex)
+    },
+    scroll(pos) {
+      this.scrollY = pos.y
+    },
+    _scrollTo(index) {
+      this.$refs.listview.scrollToElement(this.$refs.listGroup[index], 0)
+    },
+    _calculateHeight() {
+      this.listHeight = []
+      const list = this.$refs.listGroup
+      let height = 0
+      this.listHeight.push(height)
+      for (let i = 0; i <= list.length; i++) {
+        let item = list[i]
+        console.log(item)
+        height += item && item.clientHeight
+        this.listHeight.push(height)
+      }
+    }
+  },
+  watch: {
+    data() {
+      setTimeout(() => {
+        this._calculateHeight()
+      }, 20)
+    },
+    scrollY(newY) {
+      const listHeight = this.listHeight
+      for (let i = 0; i <= listHeight.length; i++) {
+        let height1 = listHeight[i]
+        let height2 = listHeight[i + 1]
+        if (-newY > height1 && -newY < height2) {
+          this.currentIndex = i
+        }
+      }
     }
   }
 }
