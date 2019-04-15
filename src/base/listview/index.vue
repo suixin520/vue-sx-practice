@@ -85,6 +85,16 @@ export default {
       this.scrollY = pos.y
     },
     _scrollTo(index) {
+      // this.scrollY = -this.listHeight[index]
+      if (!index && index !== 0) {
+        return
+      }
+      if (index < 0) {
+        index = 0
+      }
+      if (index > this.listHeight.length - 2) {
+        index = this.listHeight.length - 2
+      }
       this.$refs.listview.scrollToElement(this.$refs.listGroup[index], 0)
     },
     _calculateHeight() {
@@ -94,7 +104,6 @@ export default {
       this.listHeight.push(height)
       for (let i = 0; i <= list.length; i++) {
         let item = list[i]
-        console.log(item)
         height += item && item.clientHeight
         this.listHeight.push(height)
       }
@@ -108,13 +117,22 @@ export default {
     },
     scrollY(newY) {
       const listHeight = this.listHeight
-      for (let i = 0; i <= listHeight.length; i++) {
+      // 当滚动到顶部往上
+      if (newY > 0) {
+        this.currentIndex = 0
+        return
+      }
+      // 当滚动到中间部分
+      for (let i = 0; i <= listHeight.length - 1; i++) {
         let height1 = listHeight[i]
         let height2 = listHeight[i + 1]
-        if (-newY > height1 && -newY < height2) {
+        if (-newY >= height1 && -newY < height2) {
           this.currentIndex = i
+          return
         }
       }
+      // 当滚动到底部往下
+      this.currentIndex = listHeight.length - 2
     }
   }
 }
