@@ -26,14 +26,22 @@
         </li>
       </ul>
     </div>
+    <div class="list-fixed" v-show="fixedTitle" ref="listFixed">
+      <div class="fixed-title">{{fixedTitle}}</div>
+    </div>
+    <div class="loading-container" v-if="!data.length">
+      <loading></loading>
+    </div>
   </scroll>
 </template>
 
 <script>
 import Scroll from 'base/scroll'
+import Loading from 'base/loading'
 import { getData } from 'common/js/dom'
 
 const ANCHOR_HEIGHT = 18
+const TITLE_HEIGHT = 30
 
 export default {
   props: {
@@ -47,7 +55,8 @@ export default {
   data() {
     return {
       scrollY: -1,
-      currentIndex: 0
+      currentIndex: 0,
+      diff: -1
     }
   },
   computed: {
@@ -55,10 +64,17 @@ export default {
       return this.data.map((group) => {
         return group.title.substr(0, 1)
       })
+    },
+    fixedTitle() {
+      if (this.scrollY > 0) {
+        return ''
+      }
+      return this.data[this.currentIndex] && this.data[this.currentIndex].title
     }
   },
   components: {
-    Scroll
+    Scroll,
+    Loading
   },
   created() {
     this.touch = {} // 不在data中定义是因为data中vue会自动给变量加上getter和setter方法，这里只是为了方法中变量的共享。
@@ -128,11 +144,20 @@ export default {
         let height2 = listHeight[i + 1]
         if (-newY >= height1 && -newY < height2) {
           this.currentIndex = i
+          this.diff = height2 + newY
           return
         }
       }
       // 当滚动到底部往下
       this.currentIndex = listHeight.length - 2
+    },
+    diff(newDiff) {
+      let fixTop = (newDiff > 0 && newDiff <= TITLE_HEIGHT) ? newDiff - TITLE_HEIGHT : 0
+      if (this.fixTop === fixTop) {
+        return
+      }
+      this.fixTop = fixTop
+      this.$refs.listFixed.style.transform = `translate3d(0,${fixTop}px,0`
     }
   }
 }
