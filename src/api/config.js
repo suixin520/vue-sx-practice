@@ -4,7 +4,8 @@ export const commonParams = {
   outCharset: 'utf-8',
   notice: 0,
   platform: 'h5',
-  needNewCode: 1
+  needNewCode: 1,
+  g_tk: '907753122'
 }
 
 export const options = {

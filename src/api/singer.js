@@ -20,3 +20,21 @@ export function getSingerList() {
 
   return jsonp(url, data, options)
 }
+
+export function getSingerDetail(singerid) {
+  const url = 'https://c.y.qq.com/v8/fcg-bin/fcg_v8_singer_track_cp.fcg'
+
+  const data = Object.assign({}, commonParams, {
+    hostUin: 0,
+    needNewCode: 0,
+    platform: 'yqq',
+    format: 'jsonp',
+    num: 80,
+    ct: 24,
+    singermid: singerid,
+    order: 'listen',
+    begin: 0
+  })
+
+  return jsonp(url, data, options)
+}
