@@ -31,7 +31,6 @@ export default {
   },
   created() {
     this._getDetail()
-    console.log(this.singer)
   },
   methods: {
     _getDetail() {
@@ -43,7 +42,6 @@ export default {
         if (res.code === SUCCESS) {
           processSongsUrl(this._normalizeSongs(res.data.list)).then((songs) => {
             this.songs = songs
-            console.log(this.songs)
           })
         }
       })
