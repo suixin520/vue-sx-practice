@@ -6,10 +6,10 @@
     <h1 class="title" v-html="title"></h1>
     <div class="bg-image" :style="bgStyle" ref="bgImage">
       <div class="play-wrapper">
-        <!-- <div ref="playBtn" v-show="songs.length>0" class="play" @click="random">
+        <div ref="playBtn" v-show="songs.length>0" class="play">
           <i class="icon-play"></i>
           <span class="text">随机播放全部</span>
-        </div> -->
+        </div>
       </div>
       <div class="filter" ref="filter"></div>
     </div>
@@ -18,6 +18,9 @@
       <div class="song-list-wrapper">
         <song-list :songs="songs"></song-list>
       </div>
+      <div class="loading-container" v-show="!songs.length">
+        <loading></loading>
+      </div>
     </scroll>
   </div>
 </template>
@@ -25,6 +28,7 @@
 <script>
 import Scroll from 'base/scroll'
 import SongList from 'base/song-list'
+import Loading from 'base/loading'
 import {prefixStyle} from 'common/js/dom'
 const transform = prefixStyle('transform')
 const backdrop = prefixStyle('backdrop-filter')
@@ -53,7 +57,8 @@ export default {
   },
   components: {
     Scroll,
-    SongList
+    SongList,
+    Loading
   },
   computed: {
     bgStyle() {
@@ -97,9 +102,11 @@ export default {
         zIndex = 10
         this.$refs.bgImage.style.paddingTop = 0
         this.$refs.bgImage.style.height = `${RESERVER_HEIGHT}px`
+        this.$refs.playBtn.style.display = 'none'
       } else {
         this.$refs.bgImage.style.paddingTop = '70%'
         this.$refs.bgImage.style.height = 0
+        this.$refs.playBtn.style.display = ''
       }
       this.$refs.bgImage.style.zIndex = zIndex
     }
