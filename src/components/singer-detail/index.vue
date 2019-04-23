@@ -1,7 +1,5 @@
 <template>
-  <div class="singer-detail">
-    hello
-  </div>
+  <music-list :bg-image="bgImage" :songs="songs" :title="title"></music-list>
 </template>
 
 <script>
@@ -9,6 +7,7 @@ import {mapGetters} from 'vuex'
 import {getSingerDetail} from 'api/singer'
 import {SUCCESS} from 'api/config'
 import {createSong, isValidMusic, processSongsUrl} from 'common/js/song'
+import MusicList from '../music-list'
 
 export default {
   data() {
@@ -17,13 +16,21 @@ export default {
     }
   },
   computed: {
+    title() {
+      return this.singer.name
+    },
+    bgImage() {
+      return this.singer.avatar
+    },
     ...mapGetters([
       'singer'
     ])
   },
+  components: {
+    MusicList
+  },
   created() {
     this._getDetail()
-    console.log(this.singer)
   },
   methods: {
     _getDetail() {
@@ -35,7 +42,6 @@ export default {
         if (res.code === SUCCESS) {
           processSongsUrl(this._normalizeSongs(res.data.list)).then((songs) => {
             this.songs = songs
-            console.log(this.songs)
           })
         }
       })
