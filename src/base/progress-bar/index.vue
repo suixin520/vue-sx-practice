@@ -48,7 +48,11 @@ export default {
       this.touch.init = false
     },
     progressClick(e) {
-      this._setOffsetWidth(e.offsetX)
+      // 当我们点击progressBar时，获取offsetX不对
+      // this._setOffsetWidth(e.offsetX)
+      const rect = this.$refs.progressBar.getBoundingClientRect()
+      const offsetWidth = e.pageX - rect.left
+      this._setOffsetWidth(offsetWidth)
       this._triggerPercent()
     },
     _setOffsetWidth(offsetWidth) {
