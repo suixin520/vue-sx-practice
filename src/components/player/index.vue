@@ -24,6 +24,15 @@
               </div>
             </div>
           </div>
+          <scroll :data="currentLyric && currentLyric.lines" class="middle-r" ref="lyricList">
+            <div class="lyric-wrapper">
+              <div v-if="currentLyric">
+                <p ref="lyricLine" class="text"
+                :class="{'current': currentLineNum === i}"
+                 v-for="(line, i) in currentLyric.lines" :key="i">{{line.txt}}</p>
+              </div>
+            </div>
+          </scroll>
         </div>
         <div class="bottom">
           <div class="progress-wrapper">
@@ -87,6 +96,8 @@ import progressBar from 'base/progress-bar'
 import progressCircle from 'base/progress-circle'
 import {playMode} from 'common/js/config'
 import {shuffle} from 'common/js/utils'
+import Lyric from 'lyric-parser'
+import Scroll from 'base/scroll'
 
 const transform = prefixStyle('transform')
 export default {
@@ -94,7 +105,9 @@ export default {
     return {
       songReady: false,
       currentTime: 0,
-      radius: 32
+      radius: 32,
+      currentLyric: null,
+      currentLineNum: 0
     }
   },
   computed: {
@@ -244,6 +257,24 @@ export default {
         this.next()
       }
     },
+    getLyric() {
+      this.currentSong.getLyric().then((lyric) => {
+        this.currentLyric = new Lyric(lyric, this.handleLyric)
+        if (this.playing) {
+          this.currentLyric.play()
+        }
+        console.log(this.currentLyric)
+      })
+    },
+    handleLyric({lineNum, txt}) {
+      this.currentLineNum = lineNum
+      if (lineNum > 5) {
+        let lineEl = this.$refs.lyricLine[lineNum - 5]
+        this.$refs.lyricList.scrollToElement(lineEl, 1000)
+      } else {
+        this.$refs.lyricList.scrollTo(0, 0, 1000)
+      }
+    },
     _loop() {
       this.$refs.audio.currentTime = 0
       this.$refs.audio.play()
@@ -287,7 +318,8 @@ export default {
   },
   components: {
     progressBar,
-    progressCircle
+    progressCircle,
+    Scroll
   },
   watch: {
     currentSong(newSong, oldSong) {
@@ -296,6 +328,7 @@ export default {
       }
       this.$nextTick(() => {
         this.$refs.audio.play()
+        this.getLyric()
       })
     },
     playing(newPlaying) {

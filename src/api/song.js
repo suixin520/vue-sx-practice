@@ -1,9 +1,29 @@
 // import { commonParams } from './config'
 import { getUid } from 'common/js/uid'
+import {commonParams} from './config'
 import axios from 'axios'
 import { SUCCESS } from 'api/config'
 
 const debug = process.env.NODE_ENV !== 'production'
+
+export function getLyric(mid) {
+  const url = '/api/lyric'
+
+  const data = Object.assign({}, commonParams, {
+    songmid: mid,
+    pcachetime: +new Date(),
+    platform: 'yqq',
+    hostUin: 0,
+    needNewCode: 0,
+    format: 'json'
+  })
+
+  return axios.get(url, {
+    params: data
+  }).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
 
 export function getSongsUrl (songs) {
   const url = debug ? '/api/getPurlUrl' : 'http://ustbhuangyi.com/music/api/getPurlUrl'
