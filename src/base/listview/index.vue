@@ -103,6 +103,9 @@ export default {
     selectItem(item) {
       this.$emit('select', item)
     },
+    refresh() {
+      this.$refs.listview.refresh()
+    },
     _scrollTo(index) {
       // this.scrollY = -this.listHeight[index]
       if (!index && index !== 0) {
