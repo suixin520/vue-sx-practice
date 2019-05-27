@@ -10,7 +10,8 @@ const state = {
   mode: playMode.sequence, // 播放模式：顺序/循环/随机
   currentIndex: -1, // 当前播放位置
 
-  disc: {}
+  disc: {},
+  topList: {}
 }
 
 export default state
