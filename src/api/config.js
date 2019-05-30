@@ -5,7 +5,7 @@ export const commonParams = {
   notice: 0,
   platform: 'h5',
   needNewCode: 1,
-  g_tk: '907753122'
+  g_tk: 5381
 }
 
 export const options = {

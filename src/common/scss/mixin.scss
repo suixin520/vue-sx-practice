@@ -11,7 +11,7 @@
   white-space: nowrap;
 }
 
-@mixin extent-click {
+@mixin extend-click {
   position: relative;
   &::before {
     content: '';
