@@ -1,4 +1,7 @@
-import {mapGetters} from 'vuex'
+import {mapGetters, mapMutations} from 'vuex'
+import {playMode} from 'common/js/config'
+import {shuffle} from 'common/js/utils'
+
 export const playlistMixin = {
   computed: {
     ...mapGetters([
@@ -20,5 +23,40 @@ export const playlistMixin = {
     playlist(newVal) {
       this.handlePlaylist(newVal)
     }
+  }
+}
+
+export const playerMixin = {
+  computed: {
+    iconMode() {
+      return this.mode === playMode.sequence ? 'icon-sequence' : this.mode === playMode.loop ? 'icon-loop' : 'icon-random'
+    },
+    ...mapGetters([
+      'playlist',
+      'currentSong',
+      'playing',
+      'mode',
+      'sequencelist'
+    ])
+  },
+  methods: {
+    changeMode() {
+      const mode = (this.mode + 1) % 3
+      this.setPlayMode(mode)
+      let list = null
+      if (this.mode === playMode.random) {
+        list = shuffle(this.sequencelist)
+      } else {
+        list = this.sequencelist
+      }
+      this.resetCurrentIndex(list)
+      this.setPlaylist(list)
+    },
+    ...mapMutations({
+      sesetPlaying: 'SET_PLAYING',
+      setCurrentIndex: 'SET_CURRENT_INDEX',
+      setPlayMode: 'SET_PLAY_MODE',
+      setPlaylist: 'SET_PLAYLIST'
+    })
   }
 }
